@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Form</title>
+  <link rel="stylesheet" href="/static/css/loginstyle.css">
+  <style>
+    .error-message {
+      color: red;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <form action="{% url 'signin' %}" method="POST">
+      {% csrf_token %}
+      <h2>Login</h2>
+
+      <!-- Display Error Messages -->
+      {% if messages %} {% for message in messages %}
+        <p
+          class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}"
+        >
+          {{ message }}
+        </p>
+        {% endfor %} {% endif %}
+
+      <div class="input-field">
+        <input type="email" name="email" required>
+        <label>Enter your email</label>
+    </div>
+      <div class="input-field">
+        <input type="password" name="password" required>
+        <label>Enter your password</label>
+      </div>
+      <div class="forget">
+        <a href="{% url 'password_reset' %}">Forgot password?</a>
+      </div>
+      <button type="submit">Log In</button>
+      <div class="register">
+        <p>Don't have an account? <a href="{% url 'signup' %}">Register</a></p>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

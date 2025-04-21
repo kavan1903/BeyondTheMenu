@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/static/css/profile.css">
+</head>
+<body>
+    <div class="profile-container">
+        <h2>User Profile</h2>
+        <div class="profile-info">
+            <img src="default-profile.png" alt="Profile Picture" class="profile-pic">
+            <p><strong>Username:</strong> John Doe</p>
+            <p><strong>Email:</strong> johndoe@example.com</p>
+            <p><strong>Contact:</strong> +1234567890</p>
+        </div>
+
+        <h3>Update Profile</h3>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="profile-pic">Upload Profile Picture:</label>
+            <input type="file" id="profile-pic" name="profile-pic" accept="image/*">
+            
+            <label for="contact">Contact Number:</label>
+            <input type="text" id="contact" name="contact" placeholder="Enter your contact number">
+            
+            <button type="submit">Update</button>
+        </form>
+    </div>
+</body>
+</html>

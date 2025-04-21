@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discounts & Offers</title>
+    <style>
+      /* style.css */
+      .container {
+        width: 80%;
+        margin: auto;
+        padding: 20px;
+        text-align: center;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+      th {
+        background-color: #ff8c00;
+        color: white;
+      }
+    </style>
+    {% include "head.html" %}
+  </head>
+  <body>
+    <div class="container-xxl bg-white p-0">
+      <!-- Navbar & Hero Start -->
+      <div class="container-xxl position-relative p-0">
+        {% include "header.html" %}
+        <div class="container-xxl py-5 bg-dark hero-header mb-5">
+          <div class="container text-center my-5 pt-5 pb-4">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">
+              Discounts & Offers
+            </h1>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        {% if offers %}
+        <table>
+          <tr>
+            <th>Description</th>
+            <th>Discount</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+          </tr>
+          {% for offer in offers %}
+          <tr>
+            <td>{{ offer.offer_desc }}</td>
+            <td>{{ offer.discount_percentage }}%</td>
+            <td>{{ offer.offer_start_date }}</td>
+            <td>{{ offer.offer_end_date }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% else %}
+        <p style="color: rgb(255, 153, 0); font-size: 30px; text-align: center">
+          No current offers available.
+        </p>
+        {% endif %}
+      </div>
+    </div>
+    {% include "footer.html" %}
+  </body>
+</html>

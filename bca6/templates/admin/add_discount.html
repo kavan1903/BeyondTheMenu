@@ -1,0 +1,17 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Add Discount Offer{% endblock %}
+{% block header %}Add Discount Offer{% endblock %}
+
+{% block content %}
+    <h1>Add Discount Offer</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-success" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">Add Offer</button>
+        <a href="{% url 'manage_discounts' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

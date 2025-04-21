@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include "head.html" %}
+
+<body>
+    <div class="container-xxl bg-white p-0">
+        <!-- Navbar & Hero Start -->
+        <div class="container-xxl position-relative p-0">
+            {% include "header.html" %}
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Book a Table</h1>
+                    {% if booking_success %}
+        <div class="alert alert-success bg-light text-success fw-bold mt-4" role="alert">
+            🎉 Your table has been successfully booked!
+        </div>
+    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Navbar & Hero End -->
+        <form id="bookingForm" action="/payment-success/" method="POST" target="hidden_iframe">
+            <input type="hidden" name="name" id="form_name">
+            <input type="hidden" name="phone" id="form_phone">
+            <input type="hidden" name="email" id="form_email">
+            <input type="hidden" name="booking_date" id="form_booking_date">
+            <input type="hidden" name="time_slot" id="form_time_slot">
+            <input type="hidden" name="people" id="form_people">
+        </form>
+        <iframe name="hidden_iframe" style="display:none;"></iframe>
+        
+        <!-- Reservation Start -->
+        <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="row g-0 justify-content-center">
+                <div class="col-lg-7 col-md-10 bg-dark d-flex align-items-center justify-content-center">
+                    <div class="w-100 p-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
+                        <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
+                        <h1 class="text-white mb-4">Book A Table Online</h1>
+
+                        {% if user.is_authenticated %}
+                        <form id="booking-form" action="{% url 'book_table' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <!-- Name Field -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="name" name="name" value="{{ request.user.name }}" required>
+                                        <label for="name">Your Name</label>
+                                    </div>
+                                </div>
+                                <!-- Email Field -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                                        <label for="email">Your Email</label>
+                                    </div>
+                                </div>
+                                <!-- Phone Number -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                                        <label for="phone">Phone Number</label>
+                                    </div>
+                                </div>
+                                <!-- Date Selection -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="date" class="form-control" id="booking_date" name="booking_date" required>
+                                        <label for="booking_date">Select Date</label>
+                                    </div>
+                                    <small class="text-white">Booking allowed for the next 7 days.</small>
+                                </div>
+                                <!-- Time Slot Selection -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="time_slot" name="time_slot" required>
+                                            <option value="" disabled selected>Select Time Slot</option>
+                                        </select>
+                                        <label for="time_slot">Available Time Slots</label>
+                                    </div>
+                                </div>
+                                <!-- Number of People -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="people" name="people" required>
+                                            <option value="" disabled selected>Select No of People</option>
+                                            {% for i in people_range %}
+                                            <option value="{{ i }}">{{ i }} People</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="people">No Of People</label>
+                                    </div>
+                                </div>
+
+                                <!-- Proceed to Payment Button -->
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100 py-3" type="button" onclick="startPayment()">Proceed to Payment</button>
+                                </div>
+                            </div>
+                        </form>
+                        {% else %}
+                        <p class="text-white">Please <a href="{% url 'signin' %}" class="text-primary">log in</a> to book a table.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Reservation End -->
+
+        <!-- Razorpay Payment Script -->
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let now = new Date();
+        let maxDate = new Date();
+        maxDate.setDate(now.getDate() + 7); // Booking allowed for next 7 days
+
+        let minDateString = now.toISOString().split("T")[0];
+        let maxDateString = maxDate.toISOString().split("T")[0];
+
+        let dateInput = document.getElementById("booking_date");
+        dateInput.setAttribute("min", minDateString);
+        dateInput.setAttribute("max", maxDateString);
+    });
+
+    function generateTimeSlots() {
+        let timeSlotSelect = document.getElementById("time_slot");
+        timeSlotSelect.innerHTML = '<option value="" disabled selected>Select Time Slot</option>';
+
+        let slots = [];
+        let addTimeSlot = (startHour, startMinute, endHour, endMinute) => {
+            let startTime = new Date();
+            startTime.setHours(startHour, startMinute, 0, 0);
+            let endTime = new Date();
+            endTime.setHours(endHour, endMinute, 0, 0);
+
+            while (startTime < endTime) {
+                let nextTime = new Date(startTime);
+                nextTime.setMinutes(startTime.getMinutes() + 30);
+
+                let slot = `${startTime.getHours()}:${startTime.getMinutes().toString().padStart(2, '0')} - 
+                            ${nextTime.getHours()}:${nextTime.getMinutes().toString().padStart(2, '0')}`;
+                slots.push(slot);
+
+                startTime = nextTime;
+            }
+        };
+
+        // Adding available time slots
+        addTimeSlot(11, 0, 15, 0); // Lunch slots (11:00 AM - 3:00 PM)
+        addTimeSlot(18, 30, 23, 0); // Dinner slots (6:30 PM - 11:00 PM)
+
+        slots.forEach(slot => {
+            let option = document.createElement("option");
+            option.value = slot;
+            option.textContent = slot;
+            timeSlotSelect.appendChild(option);
+        });
+    }
+
+    document.getElementById("booking_date").addEventListener("change", generateTimeSlots);
+    
+    function startPayment() {
+        let bookingDate = document.getElementById("booking_date").value;
+        let timeSlot = document.getElementById("time_slot").value;
+        let people = document.getElementById("people").value;
+        let name = document.getElementById("name").value;
+        let phone = document.getElementById("phone").value;
+        let email = document.getElementById("email").value;
+    
+        if (!bookingDate || !timeSlot || !people) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+
+        document.getElementById("form_name").value = name;
+        document.getElementById("form_phone").value = phone;
+        document.getElementById("form_email").value = email;
+        document.getElementById("form_booking_date").value = bookingDate;
+        document.getElementById("form_time_slot").value = timeSlot;
+        document.getElementById("form_people").value = people;
+
+        // Submit hidden form to save session data
+        // document.getElementById("bookingForm").submit();
+
+
+        setTimeout(() => {
+        let amount = people <= 5 ? 6000 : 10000; // ₹60 if ≤5 people, ₹100 if 6-10 people (converted to paisa)
+        
+        let paymentSuccessUrl = "/success";  // Use the actual URL path
+        
+        let options = {
+            "key": "rzp_test_0WbOhBkylhz7hr", // Replace with your Razorpay Key
+            "amount": amount, 
+            "currency": "INR",
+            "name": "Restaurant Name",
+            "description": `Table Booking for ${people} People`,
+            "handler": function (response) {
+                document.getElementById("bookingForm").submit();
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+    
+        let rzp = new Razorpay(options);
+        rzp.open();
+    },1500);
+    }    
+    
+    
+</script>
+
+
+        <!-- Footer Start -->
+        {% include "footer.html" %}
+        <!-- Footer End -->
+
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+</body>
+</html>

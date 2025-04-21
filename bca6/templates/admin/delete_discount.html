@@ -1,0 +1,16 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Delete Discount Offer{% endblock %}
+{% block header %}Delete Discount Offer{% endblock %}
+
+{% block content %}
+    <h1>Delete Discount Offer</h1>
+
+    <p>Are you sure you want to delete the offer "<strong>{{ discount.offer_desc }}</strong>"?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'manage_discounts' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

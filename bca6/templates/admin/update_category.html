@@ -1,0 +1,12 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Update Category{% endblock %}
+{% block header %}Update Category{% endblock %}
+{% block content %}
+    <h2>Update Category: {{ category.name }}</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">Update Category</button>
+    </form>
+{% endblock %}

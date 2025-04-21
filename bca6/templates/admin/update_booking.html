@@ -1,0 +1,16 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Update Booking{% endblock %}
+{% block header %}Update Booking{% endblock %}
+
+{% block content %}
+<h1>Update Table Booking</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.as_p }}
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a href="{% url 'manage_bookings' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

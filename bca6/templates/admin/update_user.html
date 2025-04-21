@@ -1,0 +1,15 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Update User{% endblock %}
+{% block header %}Update User{% endblock %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">Update User</button>
+        <a href="{% url 'manage_users' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

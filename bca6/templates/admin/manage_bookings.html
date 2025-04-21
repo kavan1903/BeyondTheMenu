@@ -1,0 +1,69 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Bookings{% endblock %}
+{% block header %}Manage Table Bookings{% endblock %}
+
+{% block content %}
+<h1 style="text-align:center">Table Bookings</h1>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>People</th>
+            <th>Tables</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.name }}</td>
+            <td>{{ booking.phone }}</td>
+            <td>{{ booking.email }}</td>
+            <td>{{ booking.num_people }}</td>
+            <td>{{ booking.num_tables }}</td>
+            <td>{{ booking.booking_time }}</td>
+            <td>{{ booking.status }}</td>
+            <td>
+                <a href="{% url 'update_booking' booking.id %}" class="btn btn-primary btn-sm">Edit</a>
+                <button onclick="confirmDelete(event, {{ booking.id }})" class="btn btn-danger btn-sm">Delete</button>
+                <form id="delete-form-{{ booking.id }}" method="POST" action="{% url 'delete_booking' booking.id %}" style="display: none;">
+                    {% csrf_token %}
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(event, bookingId) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This booking will be permanently deleted!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById("delete-form-" + bookingId).submit();
+            }
+        });
+    }
+</script>
+{% endblock %}

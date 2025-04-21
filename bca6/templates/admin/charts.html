@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Charts</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <h2>Order Sales Chart</h2>
+    <canvas id="orderChart"></canvas>
+
+    <h2>User Registrations</h2>
+    <canvas id="userChart"></canvas>
+
+    <h2>Table Bookings</h2>
+    <canvas id="tableChart"></canvas>
+
+    <h2>Event Bookings</h2>
+    <canvas id="eventChart"></canvas>
+
+    <script>
+      function fetchChartData(url, chartId, labelText) {
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            const ctx = document.getElementById(chartId).getContext("2d");
+            new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: data.labels,
+                datasets: [
+                  {
+                    label: labelText,
+                    data: data.values,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    borderWidth: 2,
+                    fill: true,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                scales: {
+                  x: { beginAtZero: true },
+                  y: { beginAtZero: true },
+                },
+              },
+            });
+          });
+      }
+
+      fetchChartData("/charts/orders/", "orderChart", "Total Sales");
+      fetchChartData("/charts/users/", "userChart", "New Users");
+      fetchChartData("/charts/tables/", "tableChart", "Table Bookings");
+      fetchChartData("/charts/events/", "eventChart", "Event Bookings");
+    </script>
+  </body>
+</html>

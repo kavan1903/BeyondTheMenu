@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration or Sign Up form in HTML CSS | CodingLab</title>
+    <link rel="stylesheet" href="/static/css/signup.css" />
+    <!-- SweetAlert2 Library for Popups -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h2>Registration</h2>
+      {% if errors %} {% for message in errors %}
+        <p
+          class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}"
+        >
+          {{ message }}
+        </p>
+        {% endfor %} {% endif %}
+      <form action="{% url 'signup' %}" method="POST">
+        {% csrf_token %}
+        <div class="input-box">
+          <input type="text" placeholder="Enter your name" name="name" required />
+        </div>
+        <div class="input-box">
+          <input type="email" placeholder="Enter your email" name="email" required />
+        </div>
+        <div class="input-box">
+          <input type="tel" placeholder="Enter your contact number" name="phone" required
+            maxlength="10" pattern="\d{10}"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+        </div>        
+        <div class="gender-box">
+          <h3>Select Gender:</h3>
+          <input type="radio" id="male" name="gender" value="Male" />
+          <label for="male">Male</label>
+          <input type="radio" id="female" name="gender" value="Female" />
+          <label for="female">Female</label>
+          <input type="radio" id="other" name="gender" value="Other" />
+          <label for="other">Other</label>
+        </div>
+        <div class="input-box">
+          <input type="password" placeholder="Create password" name="password" required />
+        </div>
+        <div class="input-box">
+          <input type="password" placeholder="Confirm password" name="confpass" required />
+        </div>
+        <div class="input-box button">
+          <input type="submit" value="Register Now">
+        </div>
+        <div class="text">
+          <h3>Already have an account? <a href="{% url 'signin' %}">Login now</a></h3>
+        </div>
+      </form>
+      
+      
+      
+  </body>
+</html>

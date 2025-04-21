@@ -1,0 +1,17 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Add Table{% endblock %}
+{% block header %}Add Table{% endblock %}
+
+{% block content %}
+<h1>Add Table</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.as_p }}
+    </div>
+    <button type="submit" class="btn btn-success" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">Add Table</button>
+    <a href="{% url 'manage_tables' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

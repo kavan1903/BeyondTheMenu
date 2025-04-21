@@ -1,0 +1,70 @@
+    {% load static %}
+    <!DOCTYPE html>
+    <html lang="en">
+    {% include "head.html" %}
+
+    <body>
+        <div class="container-xxl bg-white p-0">
+            <!-- Navbar Start -->
+            <div class="container-xxl position-relative p-0">
+                {% include "header.html" %}
+                <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                    <div class="container text-center my-5 pt-5 pb-4">
+                        <h1 class="display-3 text-white mb-3 animated slideInDown">
+                            {{ event.name }} - Details
+                        </h1>
+                    </div>
+                </div>
+            </div>
+            <!-- Navbar End -->
+
+            <!-- Event Details Section -->
+            
+            
+            <div class="container my-5">
+                <div class="row">
+                    {% if event_details %}
+                        {% for detail in event_details %}
+                            <div class="col-md-6 mb-4 d-flex justify-content-center">
+                                <div class="card" style="width: 90%;">
+                                    {% if detail.additional_images %}
+                                        <img src="{{ detail.additional_images.url }}" class="card-img-top" alt="Event Image" style="height: 350px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="{% static 'images/default_event.jpg' %}" class="card-img-top" alt="Default Image" style="height: 350px; object-fit: cover;">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ detail.name }}</h5>
+                                        <p class="card-text">{{ detail.long_description|truncatewords:30 }}</p>
+                                        {% if detail.charge %}
+                                            <p><strong>Charge: ₹{{ detail.charge }}</strong></p>
+                                        {% endif %}
+                                        {% if request.session.user_id %}
+                                        <a href="{% url 'event_booking' event.id detail.id %}" class="btn btn-primary">Book Now</a>
+                                    {% else %}
+                                        <a href="{% url 'signin' %}?next={% url 'event_details' event.id %}" class="btn btn-warning">Login to Book</a>
+                                    {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-danger">Event details are not available.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Event Details Section End -->
+
+            
+
+            <!-- Back to Events -->
+            <div class="container text-center my-4">
+                <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
+            </div>
+
+            <!-- Footer Start -->
+            {% include "footer.html" %}
+            <!-- Footer End -->
+        </div>
+    </body>
+    </html>

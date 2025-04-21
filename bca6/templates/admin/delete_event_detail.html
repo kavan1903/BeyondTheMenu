@@ -1,0 +1,16 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Delete Event Detail{% endblock %}
+{% block header %}Delete Event Detail{% endblock %}
+
+{% block content %}
+<h1>Delete Event Detail</h1>
+
+<p>Are you sure you want to delete the event detail for <strong>{{ event_detail.name }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="{% url 'manage_event_details' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

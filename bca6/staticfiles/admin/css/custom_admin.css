@@ -1,0 +1,21 @@
+body {
+    background-color: #121212 !important;  /* Dark Background */
+    color: #007BFF  !important;  /* White text */
+}
+
+h1 {
+    color: #ff9800 !important; /* Orange heading */
+}
+
+.sidebar {
+    background-color: #222 !important;
+}
+
+.nav-sidebar .nav-link {
+    color: #ddd !important;
+}
+
+.nav-sidebar .nav-link:hover {
+    background-color: #444 !important;
+    color: #fff !important;
+}

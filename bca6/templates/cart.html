@@ -1,0 +1,431 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/cart-style.css' %}">
+    {% include "head.html" %}
+</head>
+<body>
+    <div class="container-xxl bg-white p-0">
+        <!-- Navbar & Hero -->
+        <div class="container-xxl position-relative p-0">
+            {% include "header.html" %}
+            <div class="container-xxl py-5 bg-dark hero-header mb-2">
+                <div class="container text-center my-2 pt-3 pb-2">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Cart</h1>
+                </div>
+            </div>
+        </div>
+
+        <section class="cart-section">
+            <br>
+            <h2 class="section-title text-center">Your Cart</h2>
+            <div class="row">
+                <!-- Category List -->
+                <div class="col-md-3">
+                    <div class="category-list">
+                        <h4>Categories</h4>
+                        {% for category in categories %}
+                            <div class="category-item" onclick="filterByCategory('{{ category.id }}', this)">
+                                {{ category.name }}
+                            </div>
+                        {% endfor %}
+
+                        <!-- Subcategories (displayed dynamically) -->
+                        <div id="subcategory-list" style="margin-top: 15px;"></div>
+                    </div>
+                </div>
+
+                <!-- Menu Items -->
+<div class="col-md-6">
+    <div class="menu-items" id="menu-items">
+        {% for item in menuitems %}
+            <div class="menu-card" data-category="{{ item.subcategory.category.id }}" data-subcategory="{{ item.subcategory.id }}" data-item-id="{{ item.id }}">
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" class="menu-img" />
+                <div class="menu-details">
+                    <h4 class="item-name">{{ item.name }}</h4>
+                    <p>{{ item.description }}</p>
+                    <p><strong class="item-price">Rs {{ item.price }}</strong></p>
+                </div>
+                <div class="menu-actions">
+                    <button class="remove-btn" 
+                            data-item-id="{{ item.id }}" 
+                            title="Remove from Cart">-</button>
+                    
+                    <span id="cart-quantity-{{ item.id }}">0</span>
+                    
+                    <button class="add-btn" 
+                            data-item-id="{{ item.id }}" 
+                            data-item-name="{{ item.name }}" 
+                            data-item-price="{{ item.price }}" 
+                            title="Add to Cart">+</button>
+                </div>
+                
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+                <!-- Cart Summary -->
+                <div class="col-md-3">
+                    <div class="cart-summary">
+                        <h4>Cart Summary</h4>
+                        <ul id="cart-items"></ul>
+                        <p><strong>Total: Rs <span id="cart-total">0</span></strong></p>
+                        <button id="checkout-btn" class="btn btn-primary">Proceed to Checkout</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    {% comment %} <script>
+        // ✅ Load cart from localStorage when the page loads
+        let cart = JSON.parse(localStorage.getItem("cart")) || {};
+    
+        function saveCart() {
+            localStorage.setItem("cart", JSON.stringify(cart));
+        }
+    
+        function addToCart(itemId) {
+            cart[itemId] = (cart[itemId] || 0) + 1;
+            saveCart();
+            updateCart();
+        }
+    
+        function removeFromCart(itemId) {
+            if (cart[itemId]) {
+                cart[itemId]--;
+                if (cart[itemId] <= 0) {
+                    delete cart[itemId];
+                }
+            }
+            saveCart();
+            updateCart();
+        }
+    
+        function updateCart() {
+            let cartList = document.getElementById("cart-items");
+            let totalPrice = 0;
+            cartList.innerHTML = "";
+    
+            for (let itemId in cart) {
+                let itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+                if (!itemElement) continue; // Avoid errors if item is not found
+    
+                let itemName = itemElement.querySelector(".item-name").innerText;
+                let itemPrice = parseFloat(itemElement.querySelector(".item-price").innerText.replace("Rs ", ""));
+                
+                let li = document.createElement("li");
+                li.innerText = `${itemName} x ${cart[itemId]} = Rs ${itemPrice * cart[itemId]}`;
+                cartList.appendChild(li);
+                totalPrice += itemPrice * cart[itemId];
+    
+                document.getElementById(`cart-quantity-${itemId}`).innerText = cart[itemId];
+            }
+    
+            document.getElementById("cart-total").innerText = totalPrice;
+        }
+        
+    
+        document.addEventListener("DOMContentLoaded", function() {
+            // Load cart from localStorage
+            let cart = JSON.parse(localStorage.getItem("cart")) || {};
+        
+            function saveCart() {
+                localStorage.setItem("cart", JSON.stringify(cart));
+            }
+        
+            function addToCart(itemId) {
+                cart[itemId] = (cart[itemId] || 0) + 1;
+                saveCart();
+                updateCart();
+            }
+        
+            function removeFromCart(itemId) {
+                if (cart[itemId]) {
+                    cart[itemId]--;
+                    if (cart[itemId] <= 0) {
+                        delete cart[itemId];
+                    }
+                    saveCart();
+                    updateCart();
+                }
+            }
+        
+    
+        function filterByCategory(categoryId, element) {
+            document.querySelectorAll(".category-item").forEach(item => item.classList.remove("active"));
+            if (element) element.classList.add("active");
+    
+            fetch(`/cart/?category=${categoryId}`)
+                .then(response => response.text())
+                .then(html => {
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, "text/html");
+                    document.getElementById("menu-items").innerHTML = doc.getElementById("menu-items").innerHTML;
+                    document.getElementById("subcategory-list").innerHTML = doc.getElementById("subcategory-list").innerHTML;
+                    setTimeout(updateCart, 100);
+                });
+        }
+    
+        function filterBySubcategory(subcategoryId) {
+            fetch(`/cart/?subcategory=${subcategoryId}`)
+                .then(response => response.text())
+                .then(html => {
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, "text/html");
+                    document.getElementById("menu-items").innerHTML = doc.getElementById("menu-items").innerHTML;
+                    setTimeout(updateCart, 100);
+                });
+        }
+    </script>
+        
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const addButtons = document.querySelectorAll('.add-btn');
+            const removeButtons = document.querySelectorAll('.remove-btn');
+        
+            addButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const itemId = button.dataset.itemId;
+                    updateCart('add', itemId);
+                });
+            });
+        
+            removeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const itemId = button.dataset.itemId;
+                    updateCart('remove', itemId);
+                });
+            });
+        
+            function updateCart(action, itemId) {
+                const csrfToken = getCSRFToken(); // Function to get CSRF token
+                const url = action === 'add' ? '/add-to-cart/' : '/remove-from-cart/';
+        
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: new URLSearchParams({ 'item_id': itemId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById(`cart-quantity-${itemId}`).innerText = data.quantity;
+                        updateCartTotal();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        
+            function updateCartTotal() {
+                let total = 0;
+                document.querySelectorAll('.menu-card').forEach(card => {
+                    const quantity = parseInt(card.querySelector('span').innerText);
+                    const price = parseFloat(card.querySelector('.item-price').innerText.replace('Rs', ''));
+                    total += quantity * price;
+                });
+                document.getElementById('cart-total').innerText = total;
+            }
+        
+            function getCSRFToken() {
+                return document.querySelector('[name=csrfmiddlewaretoken]').value;
+            }
+        });
+        
+    </script> {% endcomment %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let cart = JSON.parse(localStorage.getItem("cart")) || {}; // Load cart from localStorage
+    
+            function saveCart() {
+                localStorage.setItem("cart", JSON.stringify(cart)); // Save cart to localStorage
+            }
+    
+            function updateCartUI() {
+                let cartList = document.getElementById("cart-items");
+                let totalPrice = 0;
+                cartList.innerHTML = "";
+    
+                for (let itemId in cart) {
+                    let itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+                    if (!itemElement) continue;
+    
+                    let itemName = itemElement.querySelector(".item-name")?.innerText || "Unknown Item";
+                    let itemPriceText = itemElement.querySelector(".item-price")?.innerText || "Rs 0";
+                    let itemPrice = parseFloat(itemPriceText.replace("Rs ", "")) || 0;
+                    let quantity = cart[itemId];
+    
+                    let li = document.createElement("li");
+                    li.innerText = `${itemName} x ${quantity} = Rs ${itemPrice * quantity}`;
+                    cartList.appendChild(li);
+    
+                    totalPrice += itemPrice * quantity;
+    
+                    let quantityBadge = document.getElementById(`cart-quantity-${itemId}`);
+                    if (quantityBadge) {
+                        quantityBadge.innerText = quantity;
+                    }
+                }
+    
+                let cartTotal = document.getElementById("cart-total");
+                if (cartTotal) {
+                    cartTotal.innerText = `Total: Rs ${totalPrice}`;
+                }
+            }
+    
+            function updateCart(action, itemId) {
+                const csrfToken = getCSRFToken();
+                let url = action === "add" ? "{% url 'add_to_cart' %}" : "{% url 'remove_from_cart' %}";
+    
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: new URLSearchParams({ "food_id": itemId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        cart[itemId] = data.quantity;
+                        if (cart[itemId] <= 0) delete cart[itemId]; // Remove from cart if quantity is 0
+                        saveCart();
+                        updateCartUI();
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            }
+    
+            function getCSRFToken() {
+                let tokenElement = document.querySelector("[name=csrfmiddlewaretoken]");
+                return tokenElement ? tokenElement.value : "";
+            }
+    
+            function filterByCategory(categoryId, element) {
+                document.querySelectorAll(".category-item").forEach(item => item.classList.remove("active"));
+                if (element) element.classList.add("active");
+    
+                fetch(`/cart/?category=${categoryId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        let parser = new DOMParser();
+                        let doc = parser.parseFromString(html, "text/html");
+                        let menuItems = document.getElementById("menu-items");
+                        let subcategoryList = document.getElementById("subcategory-list");
+    
+                        if (menuItems) menuItems.innerHTML = doc.getElementById("menu-items").innerHTML;
+                        if (subcategoryList) subcategoryList.innerHTML = doc.getElementById("subcategory-list").innerHTML;
+    
+                        setTimeout(updateCartUI, 100);
+                    })
+                    .catch(error => console.error("Error filtering by category:", error));
+            }
+    
+            function filterBySubcategory(subcategoryId) {
+                fetch(`/cart/?subcategory=${subcategoryId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        let parser = new DOMParser();
+                        let doc = parser.parseFromString(html, "text/html");
+                        let menuItems = document.getElementById("menu-items");
+    
+                        if (menuItems) menuItems.innerHTML = doc.getElementById("menu-items").innerHTML;
+    
+                        setTimeout(updateCartUI, 100);
+                    })
+                    .catch(error => console.error("Error filtering by subcategory:", error));
+            }
+    
+            // Event listeners for Add & Remove buttons
+            document.querySelectorAll(".add-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    let itemId = this.dataset.itemId;
+                    updateCart("add", itemId);
+                });
+            });
+    
+            document.querySelectorAll(".remove-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    let itemId = this.dataset.itemId;
+                    updateCart("remove", itemId);
+                });
+            });
+    
+            updateCartUI(); // Initialize cart UI on page load
+        });
+    </script>
+    
+    <style>
+        .cart-section {
+            padding: 50px 0;
+        }
+        .category-list, .cart-summary {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .category-item, .subcategory-item {
+            padding: 10px;
+            cursor: pointer;
+            background: #f7f7f7;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+        .category-item:hover, .subcategory-item:hover {
+            background: #ff7b00;
+            color: white;
+        }
+        .menu-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        .menu-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+        .menu-actions button {
+            padding: 5px 10px;
+            background: #ff7b00;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 0 5px;
+            border-radius: 5px;
+        }
+
+        .category-item.active {
+          background-color: #ff7b00;
+          color: white;
+          font-weight: bold;
+          border-radius: 5px;
+          padding: 10px;
+          transition: background 0.3s ease;
+          cursor: pointer;
+      }
+      .category-item {
+          padding: 10px;
+          cursor: pointer;
+      }
+      
+      
+    </style>
+
+    {% include "footer.html" %}
+</body>
+</html>

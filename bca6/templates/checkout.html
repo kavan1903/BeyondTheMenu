@@ -1,0 +1,287 @@
+{% comment %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Beyond The Menu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}"> <!-- External CSS -->
+</head>
+<body>
+    <div class="checkout-container">
+        <!-- User Details Section -->
+        <div class="user-details">
+            <h2>🛒 Checkout Details</h2>
+            <label><b>Name:</b></label>
+            <input type="text">
+            
+            <label><b>Email:</b></label>
+            <input type="email" value="{{ request.user.email }}" readonly>
+
+            <label><b>Phone:</b></label>
+            <input type="text" value="{{ request.user.profile.phone }}" readonly>
+
+            <label><b>Table Number:</b></label>
+            <input type="text" value="{{ table_number }}" readonly>
+        </div>
+
+        <!-- Bill Summary Section -->
+        <div class="bill-summary">
+            <h2>📜 Order Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if cart_items %}
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>₹{{ item.price }}</td>
+                            <td>₹{{ item.total_price }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="empty-cart">No items in cart</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <hr>
+            <h3>Total Amount: <span class="total-price">₹{{ total_amount }}</span></h3>
+        </div>
+
+        <!-- Confirm Button -->
+        <form action="{% url 'confirm_order' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="confirm-btn">Confirm Order</button>
+        </form>
+    </div>
+</body>
+</html> {% endcomment %}
+
+{% comment %} 
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Beyond The Menu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}"> <!-- External CSS -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <div class="checkout-container">
+        <!-- User Details Section -->
+        <div class="user-details">
+            <h2>🛒 Checkout Details</h2>
+            <label><b>Name:</b></label>
+            <input type="text" value="{{ request.user.name }}" readonly>
+            
+            <label><b>Email:</b></label>
+            <input type="email" value="{{ request.user.email }}" readonly>
+
+            <label><b>Phone:</b></label>
+            <input type="text" value="{{ request.user.phone }}" readonly> <!-- Ensure phone is in User model -->
+
+            <label><b>Table Number:</b></label>
+            <input type="text" value="{{ table_number|default:'Not Assigned' }}" readonly>
+        </div>
+
+        <!-- Bill Summary Section -->
+        <div class="bill-summary">
+            <h2>📜 Order Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if cart_items %}
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.food.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>₹{{ item.food.price }}</td>
+                            <td>₹{{ item.total_price }}</td> <!-- Use pre-calculated total_price -->
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="empty-cart">No items in cart</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <hr>
+            <h3>Total Amount: <span class="total-price">₹{{ total_amount }}</span></h3>
+        </div>
+
+        <!-- Payment Button -->
+        <button id="rzp-button1" class="confirm-btn">Proceed to Payment</button>
+
+        <form id="payment-form" action="{% url 'confirm_order' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+            <input type="hidden" name="total_amount" value="{{ total_amount }}">
+        </form>
+    </div>
+
+    <script>
+        var options = {
+            "key": "{{ razorpay_key }}", // Razorpay Key ID
+            "amount": parseInt("{{ total_amount }}") * 100, // Convert to paisa (ensure it's an integer)
+            "currency": "INR",
+            "name": "Beyond The Menu",
+            "description": "Order Payment",
+            "handler": function (response) {
+                document.getElementById("razorpay_payment_id").value = response.razorpay_payment_id;
+                document.getElementById("payment-form").submit();
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+        document.getElementById("rzp-button1").onclick = function (e) {
+            rzp1.open();
+            e.preventDefault();
+        };
+    </script>
+</body>
+</html> {% endcomment %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Beyond The Menu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}"> 
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const tableNo = localStorage.getItem("table_number");
+            if (tableNo) {
+                document.getElementById("table_no").value = tableNo;
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="checkout-container">
+        <!-- User Details Section -->
+        <div class="user-details">
+            <h2>🛒 Checkout Details</h2>
+            <label><b>Name:</b></label>
+            <input type="text" value="{{ name }}" readonly>
+            
+            <label><b>Email:</b></label>
+            <input type="email" value="{{ email }}" readonly>
+
+            <label><b>Phone:</b></label>
+            <input type="text" value="{{ phone }}" readonly>
+
+            <label><b>Table Number:</b></label>
+            <input type="text" value="{{ table_number|default:'Not Assigned' }}" readonly>
+        </div>
+
+        <!-- Bill Summary Section -->
+        <div class="bill-summary">
+            <h2>📜 Order Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if cart_items %}
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.food.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>₹{{ item.food.price|floatformat:2 }}</td>
+                            <td>₹{{ item.total_price|floatformat:2 }}</td>
+
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="empty-cart">No items in cart</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <hr>
+            <h3>Subtotal: <span class="total-price">₹{{ total_amount|floatformat:2 }}</span></h3>
+            <h3>Discount: <span class="discount-price">-₹{{ discounted_amount|floatformat:2 }}</span></h3>
+            <h3>Final Amount: <span class="final-price">₹{{ final_amount|floatformat:2 }}</span></h3>
+        </div>
+
+        <!-- Payment Button -->
+        {% if final_amount > 0 %}
+        <button id="rzp-button1" class="confirm-btn">Proceed to Payment</button>
+        {% else %}
+        <button class="confirm-btn" disabled>Payment Not Required</button>
+        {% endif %}
+
+        <form id="payment-form" action="{% url 'confirm_order' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+            <input type="hidden" name="table_no", id="table_no">
+            <input type="hidden" name="total_amount" value="{{ final_amount|floatformat:2 }}">
+        </form>
+    </div>
+
+    <script>
+        var finalAmount = parseFloat("{{ final_amount }}");
+        
+        if (finalAmount > 0) {
+            var options = {
+                "key": "{{ razorpay_key }}", 
+                "amount": finalAmount * 100, 
+                "currency": "INR",
+                "name": "Beyond The Menu",
+                "description": "Order Payment",
+                "handler": function (response) {
+                    document.getElementById("razorpay_payment_id").value = response.razorpay_payment_id;
+                    document.getElementById("payment-form").submit();
+                },
+                "theme": {
+                    "color": "#F37254"
+                }
+            };
+
+            var rzp1 = new Razorpay(options);
+            document.getElementById("rzp-button1").onclick = function (e) {
+                rzp1.open();
+                e.preventDefault();
+            };
+        }
+    </script>
+</body>
+</html>

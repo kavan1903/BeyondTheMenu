@@ -1,0 +1,163 @@
+{% load static %}
+<nav
+  class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0"
+>
+  <a href="{% url 'home' %}" class="navbar-brand p-0">
+    <h1
+      class="text-primary m-0"
+      style="
+        font-family: 'Audrey', sans-serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        
+        color: #ff6600;
+      "
+    >
+      <i class="fa fa-utensils me-3"></i>Beyond the Menu
+    </h1>
+  </a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#navbarCollapse"
+  >
+    <span class="fa fa-bars"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <div class="navbar-nav ms-auto py-0 pe-4">
+      <a
+        href="{% url 'home' %}"
+        class="nav-item nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+        >Home</a
+      >
+      <a
+        href="{% url 'AboutUs' %}"
+        class="nav-item nav-link {% if request.resolver_match.url_name == 'AboutUs' %}active{% endif %}"
+        >About</a
+      >
+      <a
+        href="{% url 'event_list' %}"
+        class="nav-item nav-link {% if request.resolver_match.url_name == 'event_list' %}active{% endif %}"
+        >Events</a
+      >
+
+      <!-- Updated Menu Dropdown: Only Categories -->
+      <a
+        href="{% url 'menu_view' %}"
+        class="nav-item nav-link {% if request.resolver_match.url_name == 'menu_view' %}active{% endif %}"
+        >Menu</a
+      >
+
+      <div class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+          >Pages</a
+        >
+        <div class="dropdown-menu m-0">
+          <a href="{% url 'book_table' %}" class="dropdown-item">Booking</a>
+          <a href="{% url 'team' %}" class="dropdown-item">Our Team</a>
+          <a href="{% url 'discount_offers' %}" class="dropdown-item"
+            >Discount&Offers</a
+          >
+        </div>
+      </div>
+      <a
+        href="{% url 'contact' %}"
+        class="nav-item nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"
+        >Contact</a
+      >
+    </div>
+
+    <!-- Updated Section: Login/Register OR Profile/Logout -->
+    {% comment %} {% if request.session.user_id %}
+    <a href="{% url 'prof' %}" class="nav-item nav-link"
+      >Welcome, {{ request.session.user_name }}</a
+    >
+    <a href="{% url 'logout' %}" class="nav-item nav-link">Logout</a>
+
+    <!-- Show Cart only if the user is logged in -->
+    <a href="{% url 'cart_view' %}" class="nav-item nav-link">
+      <i
+        class="fa fa-shopping-cart"
+        style="font-size: 1.5rem; color: rgb(255, 255, 255); position: relative"
+      >
+        {% if cart_count %}
+        <span
+          id="cart-count"
+          style="
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: red;
+            color: white;
+            font-size: 0.8rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+          "
+        >
+          {{ cart_count }}
+        </span>
+        {% endif %}
+  </i>
+  </a>
+    {% else %}
+    <a href="{% url 'signin' %}" class="nav-item nav-link">Login</a>
+
+
+    <!-- Redirect to login if user is not logged in -->
+    <a href="{% url 'signin' %}" class="nav-item nav-link">
+      <i
+        class="fa fa-shopping-cart"
+        style="font-size: 1.5rem; color: rgb(255, 255, 255)"
+      ></i>
+    </a>
+    {% endif %} {% endcomment %}
+  </div>
+  {% if request.session.user_id %}
+    <!-- User is logged in -->
+    <a href="{% url 'prof' %}" class="nav-item nav-link">
+      Welcome, {{ request.session.user_name }}
+    </a>
+    <a href="{% url 'logout' %}" class="nav-item nav-link">Logout</a>
+
+    <!-- Show Cart only if the user is logged in -->
+    <a href="{% url 'cart_view' %}" class="nav-item nav-link">
+      <i class="fa fa-shopping-cart" style="font-size: 1.5rem; color: rgb(255, 255, 255); position: relative">
+        {% if cart_count %}
+        <span id="cart-count" style="
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: red;
+            color: white;
+            font-size: 0.8rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+          ">
+          {{ cart_count }}
+        </span>
+        {% endif %}
+      </i>
+    </a>
+
+    <!-- Admin Dashboard Link (Only for Superusers) -->
+    {% if request.session.is_admin %}
+    <a href="{% url 'adminhome' %}" class="nav-item nav-link">Admin Panel</a>
+    {% endif %}
+
+{% else %}
+    <!-- Show User Login -->
+    <a href="{% url 'signin' %}" class="nav-item nav-link">Login</a>
+
+    {% comment %} <!-- Show Admin Login -->
+    <a href="{% url 'admin_signin' %}" class="nav-item nav-link">Admin Login</a> {% endcomment %}
+
+    <!-- Redirect to login if user is not logged in -->
+    <a href="{% url 'signin' %}" class="nav-item nav-link">
+      <i class="fa fa-shopping-cart" style="font-size: 1.5rem; color: rgb(255, 255, 255)"></i>
+    </a>
+{% endif %}
+
+</nav>

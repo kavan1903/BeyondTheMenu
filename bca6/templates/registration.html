@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Signup Page</title>
+    <link rel="stylesheet" href="static/css/signup.css" />
+  </head>
+  <body>
+    <div class="background">
+      <div class="shape"></div>
+      <div class="shape"></div>
+    </div>
+    <div class="container">
+      <h2>{% for message in messages %} {{message}} {% endfor %}</h2>
+      <form id="signupForm" method="POST">
+        {% csrf_token %}
+        <h3>Signup</h3>
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required />
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required />
+        <label for="password1">Password</label>
+        <input type="password" id="password1" name="password1" required />
+
+        <label for="password2">Confirm Password</label>
+        <input type="password" id="password2" name="password2" required />
+
+        <button type="submit" id="signupButton">Signup</button>
+        <a href="{% url 'login_user' %}" id="loginLink"
+          >Already have an account</a
+        >
+      </form>
+    </div>
+    {% comment %}
+    <script src="static/loginjs.js"></script>
+    {% endcomment %}
+    <script>
+      document.querySelector(".submit").addEventListener("click", function () {
+        this.classList.add("button-clicked");
+        setTimeout(() => this.classList.remove("button-clicked"), 600);
+      });
+    </script>
+  </body>
+</html>

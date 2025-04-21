@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="{% url 'verify_payment' %}" method="POST">
+        {% csrf_token %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"
+            data-key="{{ razorpay_key }}"
+            data-amount="{{ amount }}"
+            data-currency="INR"
+            data-order_id="{{ payment_order_id }}"
+            data-buttontext="Pay Now"
+            data-name="Beyond The Menu"
+            data-description="Table Booking Payment"
+            data-prefill.name="{{ booking.name }}"
+            data-prefill.email="{{ booking.email }}"
+            data-theme.color="#F37254">
+        </script>
+    </form>
+    
+</body>
+</html>

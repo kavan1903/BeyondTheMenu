@@ -1,0 +1,188 @@
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* To position the overlay properly */
+  padding: 20px;
+  background-image: url("/static/img/login.jpg"); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: 1;
+}
+
+/* Background Overlay */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8); /* Black overlay with 0.8 opacity */
+  opacity: 0.70; /* Adjust opacity to control background image visibility */
+  z-index: -1; /* Keep it behind all content */
+}
+
+.wrapper {
+  position: relative;
+  max-width: 430px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95); 
+  padding: 34px;
+  margin: 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px); 
+}
+
+.wrapper h2 {
+  position: relative;
+  font-size: 26px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.wrapper h2::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -8px;
+  height: 3px;
+  width: 40px;
+  border-radius: 12px;
+  background: black;
+}
+
+.wrapper form {
+  margin-top: 20px;
+}
+
+.input-field {
+  position: relative;
+  margin: 20px 0;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  border: 1.5px solid #c7bebe;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.input-field label {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 14px;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.input-field input:focus,
+.input-field input:valid {
+  border-color: black;
+}
+
+.input-field input:focus + label,
+.input-field input:valid + label {
+  top: -10px;
+  left: 12px;
+  font-size: 12px;
+  color: black;
+  background: #fff;
+  padding: 0 5px;
+  border-radius: 4px;
+}
+
+.forget {
+  text-align: right;
+  margin: 10px 0;
+}
+
+.forget a {
+  color: #4070f4;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.forget a:hover {
+  text-decoration: underline;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 14px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background: #333;
+}
+
+.register {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.register p {
+  color: #333;
+  font-size: 14px;
+}
+
+.register a {
+  color: #4070f4;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register a:hover {
+  text-decoration: underline;
+}
+
+/* Error Message Styling */
+.error-message {
+  color: red;
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.success-message {
+  color: green;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+.error-message {
+  color: red;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}

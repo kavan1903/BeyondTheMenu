@@ -1,0 +1,23 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Update Menu Item{% endblock %}
+{% block header %}Update Menu Item{% endblock %}
+
+{% block content %}
+<h2>Update Menu Item</h2>
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">Update Menu Item</button>
+        <a href="{% url 'adminmenu_manage_menu' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

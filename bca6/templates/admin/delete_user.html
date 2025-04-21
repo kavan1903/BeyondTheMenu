@@ -1,0 +1,16 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Delete User{% endblock %}
+{% block header %}Delete User{% endblock %}
+
+{% block content %}
+<h1>Delete User</h1>
+
+<p>Are you sure you want to delete <strong>{{ user.name }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="{% url 'manage_users' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

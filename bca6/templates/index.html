@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% include "head.html" %}
+
+  <body>
+    <div class="container-xxl bg-white p-0">
+      <!-- Spinner Start -->
+      <div
+        id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"
+      >
+        <div
+          class="spinner-border text-primary"
+          style="width: 3rem; height: 3rem"
+          role="status"
+        >
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+      <!-- Spinner End -->
+
+      <!-- Navbar & Hero Start -->
+      <div class="container-xxl position-relative p-0">
+        
+        {% include "header.html" %}
+
+        <div class="container-xxl py-5 bg-dark hero-header mb-5">
+          <div class="container my-5 py-5">
+            <div class="row align-items-center g-5">
+              <div class="col-lg-6 text-center text-lg-start">
+                <h1 style="color:white;">Savor the Authentic Flavors of<br> Malhaar Exotica
+                </h1>
+                <p class="text-white animated slideInLeft mb-4 pb-2">
+                  Indulge in a culinary journey like never before, where every dish tells a story of tradition, taste, and passion. At Beyond the Menu, we bring you an exquisite fusion of authentic Indian flavors with a modern twist, served in an ambiance that complements every occasion. Experience a feast for your senses with our carefully curated dishes made from the freshest ingredients.<br><br>
+                  <b>Book your table now and embark on a delightful dining experience!</b>
+
+                </p>
+                {% if request.session.user_id %}
+    <a href="{% url 'book_table' %}" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">
+        Book A Table
+    </a>
+{% else %}
+    <a href="{% url 'signin' %}" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">
+        Book A Table
+    </a>
+{% endif %}
+
+              </div>
+              <div class="col-lg-6 text-center text-lg-end">
+                <img class="img-fluid" src="static/img/homeimage.png" alt="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Navbar & Hero End -->
+
+      <!-- Service Start -->
+      {% comment %} <div class="container-xxl py-5">
+        <div class="container">
+          <div class="row g-4">
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+              <div class="service-item rounded pt-3">
+                <div class="p-4">
+                  <i class="fa fa-3x fa-user-tie text-primary mb-4"></i>
+                  <h5>Master Chefs</h5>
+                  <p>
+                    Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita
+                    amet diam
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+              <div class="service-item rounded pt-3">
+                <div class="p-4">
+                  <i class="fa fa-3x fa-utensils text-primary mb-4"></i>
+                  <h5>Quality Food</h5>
+                  <p>
+                    Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita
+                    amet diam
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+              <div class="service-item rounded pt-3">
+                <div class="p-4">
+                  <i class="fa fa-3x fa-cart-plus text-primary mb-4"></i>
+                  <h5>Online Order</h5>
+                  <p>
+                    Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita
+                    amet diam
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+              <div class="service-item rounded pt-3">
+                <div class="p-4">
+                  <i class="fa fa-3x fa-headset text-primary mb-4"></i>
+                  <h5>24/7 Service</h5>
+                  <p>
+                    Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita
+                    amet diam
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Service End --> {% endcomment %}
+
+      <!-- About Start -->
+      <div class="container-xxl py-5">
+        <div class="container">
+          <div class="row g-5 align-items-center">
+            <div class="col-lg-6">
+              <div class="row g-3">
+                <div class="col-6 text-start">
+                  <img
+                    class="img-fluid rounded w-100 wow zoomIn"
+                    data-wow-delay="0.1s"
+                    src="static/img/about-1.jpg"
+                  />
+                </div>
+                <div class="col-6 text-start">
+                  <img
+                    class="img-fluid rounded w-75 wow zoomIn"
+                    data-wow-delay="0.3s"
+                    src="static/img/about-2.jpg"
+                    style="margin-top: 25%"
+                  />
+                </div>
+                <div class="col-6 text-end">
+                  <img
+                    class="img-fluid rounded w-75 wow zoomIn"
+                    data-wow-delay="0.5s"
+                    src="static/img/about-3.jpg"
+                  />
+                </div>
+                <div class="col-6 text-end">
+                  <img
+                    class="img-fluid rounded w-100 wow zoomIn"
+                    data-wow-delay="0.7s"
+                    src="static/img/about-4.jpg"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+             
+              <h1 class="mb-4">
+                Welcome to
+                <i class="fa fa-utensils text-primary me-2"></i>Malhar Exotica
+              </h1>
+              <h5 class="section-title ff-secondary text-start text-primary fw-normal">Who we are</h5>
+                        <p class="mb-4">At Malhar Exotica, we believe that dining is more than just a meal – it’s an experience. Nestled in an inviting and luxurious setting, we offer a perfect blend of exotic flavors, warm service, and an ambiance that captures the essence of indulgence.</p>
+                        <p class="mb-4"> Malhar Exotica was founded with the dream of bringing a unique dining experience to our community.</p>
+                        
+              {% comment %} <div class="row g-4 mb-4">
+                <div class="col-sm-6">
+                  <div
+                    class="d-flex align-items-center border-start border-5 border-primary px-3"
+                  >
+                    <h1
+                      class="flex-shrink-0 display-5 text-primary mb-0"
+                      data-toggle="counter-up"
+                    >
+                      15
+                    </h1>
+                    <div class="ps-4">
+                      <p class="mb-0">Years of</p>
+                      <h6 class="text-uppercase mb-0">Experience</h6>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div
+                    class="d-flex align-items-center border-start border-5 border-primary px-3"
+                  >
+                    <h1
+                      class="flex-shrink-0 display-5 text-primary mb-0"
+                      data-toggle="counter-up"
+                    >
+                      50
+                    </h1>
+                    <div class="ps-4">
+                      <p class="mb-0">Popular</p>
+                      <h6 class="text-uppercase mb-0">Master Chefs</h6>
+                    </div>
+                  </div>
+                </div>
+              </div> {% endcomment %}
+              <div class="row g-4 mb-4">
+                <style>
+                  .counter-plus::after {
+                    content: "+";
+                    margin-left: 2px;
+                    font-size: inherit;
+                  }
+                </style>
+              
+                <div class="col-sm-6">
+                  <div class="d-flex align-items-center border-start border-5 border-primary px-3">
+                    <h1 class="flex-shrink-0 display-5 text-primary mb-0 counter-plus" data-toggle="counter-up">
+                      15
+                    </h1>
+                    <div class="ps-4">
+                      <p class="mb-0">Years of</p>
+                      <h6 class="text-uppercase mb-0">Experience</h6>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="col-sm-6">
+                  <div class="d-flex align-items-center border-start border-5 border-primary px-3">
+                    <h1 class="flex-shrink-0 display-5 text-primary mb-0 counter-plus" data-toggle="counter-up">
+                      50
+                    </h1>
+                    <div class="ps-4">
+                      <p class="mb-0">Popular</p>
+                      <h6 class="text-uppercase mb-0">Master Chefs</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <a class="btn btn-primary py-3 px-5 mt-2" href="{% url 'AboutUs' %}">Read More</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- About End -->
+
+      <!-- Menu Start -->
+      <!-- Menu End -->
+
+      <!-- Reservation Start -->
+
+      
+      <!-- Reservation Start -->
+
+      <!-- Team Start -->
+      
+      <!-- Testimonial End -->
+
+      {% include "footer.html" %}
+
+      <!-- Back to Top -->
+      <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"
+        ><i class="bi bi-arrow-up"></i
+      ></a>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="static/lib/wow/wow.min.js"></script>
+    <script src="static/lib/easing/easing.min.js"></script>
+    <script src="static/lib/waypoints/waypoints.min.js"></script>
+    <script src="static/lib/counterup/counterup.min.js"></script>
+    <script src="static/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="static/lib/tempusdominus/js/moment.min.js"></script>
+    <script src="static/lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="static/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="static/js/main.js"></script>
+  </body>
+</html>

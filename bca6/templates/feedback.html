@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Feedback</title>
+    {% include "head.html" %}
+</head>
+<body>
+    <div class="container-xxl bg-white p-0">
+        <!-- Navbar & Hero -->
+        <div class="container-xxl position-relative p-0">
+            {% include "header.html" %}
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Feedback</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <h2>Submit Your Feedback</h2>
+
+            <!-- Display Success/Error Message -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Your Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ user.first_name }} {{ user.last_name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Your Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" {% if user.is_authenticated %}readonly{% endif %} required>
+                </div>
+                <div class="mb-3">
+                    <label for="feedback" class="form-label">Feedback Details</label>
+                    <textarea class="form-control" id="feedback" name="feedback" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </form>
+        </div>
+
+        <br><br><br>
+        {% include "footer.html" %}
+    </div>
+</body>
+</html>

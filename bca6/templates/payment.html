@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <h2>Complete Your Payment</h2>
+    <p>Amount: ₹{{ amount }} INR</p>
+
+    <button id="pay-btn">Pay Now</button>
+
+    <script>
+        var options = {
+            "key": "{{ razorpay_key }}", // Razorpay API Key
+            "amount": "{{ amount }}" * 100, // Amount in paise
+            "currency": "{{ currency }}",
+            "name": "Beyond the Menu",
+            "description": "Table Booking Payment",
+            "order_id": "{{ razorpay_order_id }}", // Generated order ID from views.py
+            "handler": function (response){
+                alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+                window.location.href = "{% url 'payment_success' %}";
+            },
+            "prefill": {
+                "name": "Your Name",
+                "email": "your-email@example.com",
+                "contact": "9999999999"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+
+        document.getElementById('pay-btn').onclick = function(e){
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+</body>
+</html>

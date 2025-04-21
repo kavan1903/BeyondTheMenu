@@ -1,0 +1,310 @@
+{% load static %}
+    <!DOCTYPE html>
+    <html lang="en">
+    {% include "head.html" %}
+    
+    <body>
+        <div class="container-xxl bg-white p-0">
+            {% include "header.html" %}
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Book Your Event</h1>
+                </div>
+            </div>
+    
+            <div class="container my-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <h2 class="text-center mb-4">Event Booking Form</h2>
+    
+                        {% if messages %}
+                        <div class="alert alert-info">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+    
+                        {% if event %}
+                        <form method="POST" id="bookingForm">
+                            {% csrf_token %}
+    
+                            <div class="mb-3">
+                                <label for="event" class="form-label">Event Name</label>
+                                <input type="text" id="event" name="event" class="form-control" value="{{ event.name }}" readonly>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label for="sub_event" class="form-label">Sub Event</label>
+                                <input type="text" id="sub_event" name="sub_event" class="form-control" value="{{ event_detail.name }}" readonly>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Your Name</label>
+                                <input type="text" id="name" name="name" class="form-control"
+                                    value="{{ request.user.name|default:'' }}" required>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" name="email" class="form-control"
+                                    value="{{ request.user.email|default:'' }}" required>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Event Date</label>
+                                <input type="date" id="date" name="date" class="form-control" required>
+                            </div>
+    
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    let today = new Date();
+                                    let minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split("T")[0];  
+                                    let maxDate = new Date(today.getFullYear(), today.getMonth() + 3, today.getDate()).toISOString().split("T")[0];  
+                                    document.getElementById("date").setAttribute("min", minDate);
+                                    document.getElementById("date").setAttribute("max", maxDate);
+                                });
+                            </script>
+    
+
+                            
+                            <div class="mb-3">
+                                <label for="time" class="form-label">Event Time</label>
+                                <input type="time" id="time" name="time" class="form-control" required>
+                            </div>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    let today = new Date().toISOString().split("T")[0]; 
+                                    document.getElementById("event_date").setAttribute("min", today);
+                                
+                                    document.getElementById("event_date").addEventListener("change", function () {
+                                        let selectedDate = new Date(this.value);
+                                        let today = new Date();
+                                        let timeInput = document.getElementById("event_time");
+                                
+                                        if (selectedDate.toDateString() === today.toDateString()) {
+                                            let currentHour = today.getHours();
+                                            let currentMinute = today.getMinutes();
+                                            timeInput.min = ${String(currentHour).padStart(2, '0')}:${String(currentMinute).padStart(2, '0')};
+                                        } else {
+                                            timeInput.removeAttribute("min");
+                                        }
+                                    });
+                                });
+                                </script>
+                                
+    
+                            <div class="mb-3">
+                                <label for="no_of_persons" class="form-label">Number of Persons</label>
+                                <input type="number" id="no_of_persons" name="no_of_persons" class="form-control" min="1" required>
+                            </div>
+                            <script>
+                            
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    const personsInput = document.getElementById("no_of_persons");
+                                    const payButton = document.getElementById("payWithRazorpay");
+                                
+                                    // Initially disable the pay button
+                                    payButton.disabled = true;
+                                
+                                    function validatePersons() {
+                                        let numPersons = parseInt(personsInput.value, 10);
+                                
+                                        if (!numPersons || numPersons <= 0 || isNaN(numPersons)) {
+                                            payButton.disabled = true;
+                                        } else {
+                                            payButton.disabled = false;
+                                        }
+                                    }
+                                
+                                    personsInput.addEventListener("input", validatePersons);
+                                });
+                                
+                        </script>
+                            <div class="mb-3">
+                                <label for="charges" class="form-label">Advance Charges</label>
+                                <input type="text" id="charges" name="charges" class="form-control"
+                                    value="{{ advance_charge|default:'N/A' }}" readonly>
+                            </div>
+    
+
+                            <button type="button" id="payWithRazorpay" class="btn btn-warning" disabled>PAY WITH RAZORPAY</button>
+    
+                            <div class="text-center mt-3">
+                                <button type="submit" id="submitBooking" class="btn btn-primary" disabled>SUBMIT BOOKING</button>
+                            </div>
+                            
+                        </form>
+    
+                        {% else %}
+                        <p class="text-danger text-center">Event details are not available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+    
+            <div class="container text-center my-4">
+                <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
+            </div>
+            {% include "footer.html" %}
+        </div>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const eventInput = document.getElementById("event");
+                const personsInput = document.getElementById("no_of_persons");
+                const dateInput = document.getElementById("date");
+                const timeInput = document.getElementById("time");
+                const payButton = document.getElementById("payWithRazorpay");
+                const submitButton = document.getElementById("submitBooking");
+        
+                const capacities = {
+                    "Haldi ceremony": 200,
+                    "Birthday Celebration": 250,
+                    "Sangeet Function": 400,
+                    "Corporate Meeting": 100,
+                    "Marriage Event": 1500
+                };
+        
+                function updateCapacity() {
+                    let eventName = eventInput.value;
+                    let maxCapacity = capacities[eventName] || 1;
+                    personsInput.setAttribute("max", maxCapacity);
+                    validateForm();
+                }
+        
+                function validateForm() {
+                    let eventName = eventInput.value;
+                    let numPersons = parseInt(personsInput.value, 10) || 0;
+                    let eventDate = dateInput.value;
+                    let eventTime = timeInput.value;
+                    let maxCapacity = capacities[eventName] || 1;
+        
+                    let today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    let minDate = new Date();
+                    minDate.setDate(today.getDate() + 5);
+                    let minDateString = minDate.toISOString().split("T")[0];
+        
+                    if (eventDate && eventDate < minDateString) {
+                        alert("You must book an event at least 5 days in advance.");
+                        dateInput.value = "";
+                        return false;
+                    }
+        
+                    if (numPersons > maxCapacity) {
+                        alert("Number of persons exceeds event capacity! Maximum capacity = " + maxCapacity);
+                        personsInput.value = maxCapacity;
+                        return false;
+                    }
+        
+                    if (eventTime) {
+                        let [hour] = eventTime.split(":").map(Number);
+                        if (hour < 9 || hour >= 21) {
+                            alert("Events can only be booked between 9 AM and 9 PM.");
+                            timeInput.value = "";
+                            return false;
+                        }
+                    }
+        
+                    checkDoubleBooking(eventDate);
+                    togglePayButton();
+                    return true;
+                }
+        
+                function checkDoubleBooking(eventDate) {
+                    if (!eventDate) return;
+        
+                    fetch("{% url 'check_double_booking' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: new URLSearchParams({ "date": eventDate })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            alert("This date is already fully booked. Please choose another date.");
+                            dateInput.value = "";
+                            timeInput.value = "";
+                            payButton.disabled = true;
+                            submitButton.disabled = true;
+                        } else {
+                            togglePayButton();
+                        }
+                    })
+                    .catch(error => console.error("Error checking double booking:", error));
+                }
+        
+                function togglePayButton() {
+                    if (eventInput.value && personsInput.value && dateInput.value && timeInput.value) {
+                        payButton.disabled = false;
+                    } else {
+                        payButton.disabled = true;
+                    }
+                }
+        
+                payButton.addEventListener("click", function () {
+                    payButton.disabled = true;
+                    submitButton.disabled = true;
+        
+                    fetch("{% url 'create_payment' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: new URLSearchParams({
+                            "amount": parseInt("{{ advance_charge|default:'0' }}")
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.order_id) {
+                            var options = {
+                                "key": data.key,
+                                "amount": data.amount * 100,
+                                "currency": "INR",
+                                "name": "Beyond the Menu",
+                                "description": "Event Booking Payment",
+                                "order_id": data.order_id,
+                                "handler": function (response) {
+                                    alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+                                    submitButton.disabled = false;
+                                },
+                                "prefill": {
+                                    "name": "{{ request.user.get_full_name|default:'' }}",
+                                    "email": "{{ request.user.email|default:'' }}"
+                                },
+                                "theme": { "color": "#3399cc" }
+                            };
+                            new Razorpay(options).open();
+                        } else {
+                            alert("Payment failed. Please try again.");
+                            payButton.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Payment request failed:", error);
+                        alert("Error processing payment. Please try again.");
+                        payButton.disabled = false;
+                    });
+                });
+        
+                let minBookingDate = new Date();
+                minBookingDate.setDate(minBookingDate.getDate() + 5);
+                dateInput.setAttribute("min", minBookingDate.toISOString().split("T")[0]);
+        
+                eventInput.addEventListener("change", updateCapacity);
+                personsInput.addEventListener("input", validateForm);
+                dateInput.addEventListener("change", validateForm);
+                timeInput.addEventListener("input", validateForm);
+            });
+        </script>
+                
+        
+    </body>
+    </html>

@@ -1,0 +1,16 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Update Event{% endblock %}
+{% block header %}Update Event{% endblock %}
+
+{% block content %}
+<h1>Update event</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">Update Event</button>
+        <a href="{% url 'manage_events' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

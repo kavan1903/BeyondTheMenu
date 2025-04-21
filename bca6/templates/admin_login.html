@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="/static/css/loginstyle.css">
+  <style>
+    .error-message { color: red; text-align: center; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <form action="{% url 'admin_signin' %}" method="POST">
+      {% csrf_token %}
+      <h2>Admin Login</h2>
+
+      {% if messages %} {% for message in messages %}
+        <p class="error-message">{{ message }}</p>
+      {% endfor %} {% endif %}
+
+      <div class="input-field">
+        <input type="email" name="email" required>
+        <label>Enter Admin Email</label>
+      </div>
+      <div class="input-field">
+        <input type="password" name="password" required>
+        <label>Enter Password</label>
+      </div>
+      <button type="submit">Log In</button>
+    </form>
+  </div>
+</body>
+</html>
